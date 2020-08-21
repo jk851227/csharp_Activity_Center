@@ -24,7 +24,7 @@ namespace ActivityCenter
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ActivityCenterContext>(options => options.UseMySql(Configuration["DBInfo:ConnectionString"]));
+            services.AddDbContext<ActivityCenterContext>(options => options.UseMySql(Configuration.GetConnectionString("DBInfo:ConnectionString")));
             // to access session directly from view: @using Microsoft.AspNetCore.Http in Views/_ViewImports.cshtml
             services.AddHttpContextAccessor();
             services.AddSession();
