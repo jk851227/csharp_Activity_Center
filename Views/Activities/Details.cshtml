@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    int uid = (int)Context.Session.GetInt32("UserId");
+}
+
+@model Activity
+
+<h1>@Model.Title</h1>
+<p>Event Coordinator: @Model.Coordinator.FirstName</p>
+
+<h5>Description</h5>
+<p>@Model.Description</p>
+
+<h5>Participants</h5>
+@foreach (var participants in Model.Participants)
+{
+    @if (@participants == null)
+    {
+        <p>There are no participants yet</p>
+    }
+    else
+    {
+        <p>@participants.Participant.FirstName</p>
+    }
+}
+
+@if (Model.Participants.Any(p => p.UserId == uid))
+{
+    <form asp-controller="Activities" asp-action="UnParticipate" asp-route-activityId="@Model.ActivityId" method="POST">
+        <button class="btn btn-warning">Not Going</button>
+    </form>
+}
+else if(Model.Coordinator.UserId == uid)
+{
+    <form asp-controller="Activities" asp-action="Delete" asp-route-activityId="@Model.ActivityId" method="POST">
+        <button class="btn btn-danger">Delete</button>
+    </form>
+}
+else
+{
+    <form asp-controller="Activities" asp-action="Participate" asp-route-activityId="@Model.ActivityId" method="POST">
+        <button class="btn btn-info">Participate</button>
+    </form>
+}

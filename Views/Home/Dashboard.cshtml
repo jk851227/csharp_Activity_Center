@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    int uid = (int)Context.Session.GetInt32("UserId");
+}
+
+@model List<Activity>
+
+<h1>Activity Center</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Activity</th>
+            <th scope="col">Date & Time</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Event Coordinator</th>
+            <th scope="col"># of Participants</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Activity activity in Model)
+        {
+            @if(activity.Time > DateTime.Now)
+            {
+            <tr>
+                <td>
+                    <a asp-controller="Activities" asp-action="Details" asp-route-activityId="@activity.ActivityId">
+                        @activity.Title
+                    </a>
+                </td>
+                <td>@activity.ActivityDateTime</td>
+                <td>@activity.ActivityDuration</td>
+                <td>@activity.Coordinator.FirstName</td>
+                <td>@activity.Participants.Count</td>
+                @if(activity.Coordinator.UserId == uid)
+                {
+                    <td>
+                        <form asp-controller="Activities" asp-action="Delete" asp-route-activityId="@activity.ActivityId" method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                }
+                else if(activity.Participants != null)
+                {
+                    @if(activity.Participants.Any(p => p.UserId == uid))
+                    {
+                        <td>
+                            <form asp-controller="Activities" asp-action="UnParticipate" asp-route-activityId="@activity.ActivityId" method="POST">
+                                <button class="btn btn-warning">Not Going</button>
+                            </form>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <form asp-controller="Activities" asp-action="Participate" asp-route-activityId="@activity.ActivityId" method="POST">
+                                <button class="btn btn-info">Participate</button>
+                            </form>
+                        </td>
+                    }
+                }
+                else
+                {
+                    <td>
+                        <form asp-controller="Activities" asp-action="Participate" asp-route-activityId="@activity.ActivityId" method="POST">
+                            <button class="btn btn-info">Participate</button>
+                        </form>
+                    </td>
+                }
+            </tr>
+            }
+            else
+            {
+
+            }
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Activities" asp-action="New" class="btn btn-info">Add New Activity</a>
